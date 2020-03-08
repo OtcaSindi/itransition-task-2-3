@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react"
+import React, {Component, Fragment, useEffect, useState} from "react"
 import {useDispatch} from 'react-redux'
 
 import {create} from "../../services"
@@ -6,87 +6,88 @@ import {PINK, BLUE, GREY} from "../../constants"
 import {Modal} from 'react-materialize'
 
 import "materialize-css/dist/css/materialize.min.css"
-import {fetchNotes, notesError, notesLoaded, notesRequested} from "../../actionsCreator"
+import {notesError, notesLoaded, notesRequested} from "../../actionsCreator"
 import {useAuth} from "../../hooks/auth.hook"
 
-const CreateNoteModal = () => {
+const EditNoteModal = ({noteId, title, content, color}) => {
 
     const {token} = useAuth()
     const dispatch = useDispatch()
 
-    const [title, setTitle] = useState('')
-    const [content, setContent] = useState('')
-    const [color, setColor] = useState('')
+    const [newTitle, setNewTitle] = useState(title)
+    const [newContent, setNewContent] = useState(content)
+    const [newColor, setNewColor] = useState(color)
 
-    const createNote = async () => {
-        await create()
-            .createNote(token, {
-                title,
-                content,
-                color
-            })
-        dispatch(fetchNotes(token))
+    useEffect(() => {
+        window.M.updateTextFields()
+    }, [])
+
+    const editNote = (noteId) => async () => {
+        try {
+            dispatch(notesRequested())
+            const {data} = await create()
+                .editNote(token, noteId, {
+                    title: newTitle,
+                    content: newContent,
+                    color: newColor
+                })
+            dispatch(notesLoaded(data))
+        } catch (e) {
+            dispatch(notesError(e))
+        }
     }
 
     const changeTitle = (e) => {
-        setTitle(e.target.value)
+        setNewTitle(e.target.value)
     }
 
     const changeContent = (e) => {
-        setContent(e.target.value)
+        setNewContent(e.target.value)
     }
 
     const changeColor = (color) => () => {
-        setColor(color)
+        setNewColor(color)
     }
 
     return (
         <Modal style={{width: '35%'}}
-               actions={[
-                   <button className="modal-close waves-effect waves-red btn-flat">
-                       Cancel
-                   </button>,
-                   <button className="modal-close waves-effect waves-red btn-flat"
-                           onClick={createNote}>
-                       Create
-                   </button>
-               ]}
-               id="modal-0"
-               options={{
-                   dismissible: true,
-                   endingTop: '10%',
-                   inDuration: 250,
-                   onCloseEnd: null,
-                   onCloseStart: null,
-                   onOpenEnd: null,
-                   onOpenStart: null,
-                   opacity: 0.5,
-                   outDuration: 250,
-                   startingTop: '4%'
-               }}
-               trigger={
-                       <button
-                           className="waves-effect blue darken-3 btn modal-trigger"
-                           style={{fontSize: '22px', position: 'relative', top: '5px', right: '50px'}}
-                           data-target="modal1"
-                       >
-                           +
-                       </button>
-               }
+            actions={[
+                <button className="modal-close waves-effect waves-red btn-flat">
+                    Cancel
+                </button>,
+                <button className="modal-close waves-effect waves-red btn-flat"
+                onClick={editNote(noteId)}>
+                    Edit
+                    </button>
+            ]}
+            id="modal-0"
+            options={{
+                dismissible: true,
+                endingTop: '10%',
+                inDuration: 250,
+                onCloseEnd: null,
+                onCloseStart: null,
+                onOpenEnd: null,
+                onOpenStart: null,
+                opacity: 0.5,
+                outDuration: 250,
+                startingTop: '4%'
+            }}
+            trigger={<a>Edit</a>}
         >
             <div className="center">
-                <h3 style={{paddingTop: '5px'}} className="card-title">Create note</h3>
+                <h3 style={{paddingTop: '5px'}} className="card-title">Editing note</h3>
             </div>
             <div className="modal-content" style={{padding: '0', height: '150px'}}>
                 <div className="input-field col s12">
                     <input
-                        id={`title-note-modal`}
+                        id={`title-note-modal${noteId}`}
                         type="text"
-                        name={`title`}
-                        value={title}
+                        name={`title${noteId}`}
+                        value={newTitle}
                         onChange={changeTitle}
                     />
-                    <label htmlFor={`title-note-modal`}>Title</label>
+                    <label htmlFor={`title-note-modal${noteId}`}>Title</label>
                 </div>
 
                 <div className="row" style={{marginBottom: '0px'}}>
@@ -94,13 +95,17 @@ const CreateNoteModal = () => {
                         <div className="row" style={{marginBottom: '0px'}}>
                             <div className="input-field col s12">
                                     <textarea
-                                        id={`content-note-modal`}
+                                        style={{
+                                            overflow: 'hidden',
+                                            resize: 'none'
+                                        }}
+                                        id={`content-note-modal${noteId}`}
                                         className="materialize-textarea"
-                                        name={`content`}
-                                        value={content}
+                                        name={`content${noteId}`}
+                                        value={newContent}
                                         onChange={changeContent}
                                     />
-                                <label htmlFor={`content-note-modal`}>Description</label>
+                                <label htmlFor={`content-note-modal${noteId}`}>Description</label>
                             </div>
                         </div>
                     </form>
@@ -109,7 +114,7 @@ const CreateNoteModal = () => {
                 <div>
                     <p style={{margin: '0'}} onClick={changeColor(BLUE)}>
                         <label>
-                            <input className="with-gap" name={`radio`} type="radio"/>
+                            <input className="with-gap" name={`radio${noteId}`} type="radio" defaultChecked={newColor === BLUE}/>
                             <span/>
                             <div
                                 style={{
@@ -124,7 +129,7 @@ const CreateNoteModal = () => {
 
                     <p style={{margin: '0'}} onClick={changeColor(GREY)}>
                         <label>
-                            <input className="with-gap" name={`radio`} type="radio"/>
+                            <input className="with-gap" name={`radio${noteId}`} type="radio" defaultChecked={newColor === GREY}/>
                             <span/>
                             <div
                                 style={{
@@ -139,7 +144,7 @@ const CreateNoteModal = () => {
 
                     <p style={{margin: '0'}} onClick={changeColor(PINK)}>
                         <label>
-                            <input className="with-gap" name={`radio`} type="radio"/>
+                            <input className="with-gap" name={`radio${noteId}`} type="radio" defaultChecked={newColor === PINK}/>
                             <span/>
                             <div
                                 style={{
@@ -161,5 +166,5 @@ const CreateNoteModal = () => {
     )
 }
 
-export default CreateNoteModal
+export default EditNoteModal
 

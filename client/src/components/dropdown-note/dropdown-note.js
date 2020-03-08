@@ -1,26 +1,76 @@
-import React, {useEffect} from 'react'
-import M from 'materialize-css'
+import React, {useState} from "react"
 
-const DropdownNote = () => {
+import {Dropdown} from 'react-materialize'
 
-    useEffect(() => {
-        let elems = document.querySelectorAll('.dropdown-trigger')
-        M.Dropdown.init(elems, {inDuration: 300, outDuration: 225})
-    }, [])
+import {useAuth} from "../../hooks/auth.hook"
+import {create} from "../../services"
+import {useDispatch} from "react-redux"
+import {notesRequested, notesLoaded, notesError} from "../../actionsCreator"
+import EditNoteModal from "../edit-note-modal"
+
+const DropdownNote = ({noteId, title, content, color}) => {
+
+    const {token} = useAuth()
+    const dispatch = useDispatch()
+    const [form, setForm] = useState({
+        title: '',
+        content: '',
+
+    })
+
+    const removeNoteById = (id) => async () => {
+        try {
+            dispatch(notesRequested())
+            const {data} = await create().deleteNoteById(token, id)
+            dispatch(notesLoaded(data))
+        } catch (e) {
+            dispatch(notesError(e))
+        }
+    }
+
+    const editNoteById = (id) => async () => {
+        try {
+            dispatch(notesRequested())
+            const {data} = await create().editNoteById(token, id, )
+            dispatch(notesLoaded(data))
+        } catch (e) {
+            dispatch(notesError(e))
+        }
+    }
 
     return (
-        <div className="input-field col s12">
-            <a className='dropdown-button btn' data-activates='dropdown1'>Drop Me!</a>
-            <ul id='dropdown1' className='dropdown-content'>
-                <li><a href="#!">one</a></li>
-                <li><a href="#!">two</a></li>
-                <li className="divider"/>
-                <li><a href="#!">three</a></li>
-                <li><a href="#!"><i className="material-icons">view_module</i>four</a></li>
-                <li><a href="#!"><i className="material-icons">cloud</i>five</a></li>
-            </ul>
-        </div>
+        <Dropdown
+            options={{
+                alignment: 'left',
+                autoTrigger: true,
+                closeOnClick: true,
+                constrainWidth: true,
+                container: null,
+                coverTrigger: true,
+                hover: false,
+                inDuration: 150,
+                onCloseEnd: null,
+                onCloseStart: null,
+                onOpenEnd: null,
+                onOpenStart: null,
+                outDuration: 250
+            }}
+            trigger={<i
+                style={{
+                    border: "1px solid white",
+                    borderRadius: '20%',
+                    position: 'relative',
+                    top: '10px',
+                    right: '80px'
+                }}
+                className="material-icons">edit</i>}
+        >
+            <EditNoteModal token={token} noteId={noteId} title={title} content={content} color={color}/>
+            <a onClick={removeNoteById(noteId)}>
+                Delete
+            </a>
+        </Dropdown>
     )
-
 }
+
 export default DropdownNote

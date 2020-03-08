@@ -18,7 +18,6 @@ const notesForFront = (notes) => {
 
 router.post('/create', auth, async (req, res) => {
     try {
-
         const {title, content, color} = req.body
         const note = new Note({
             owner: req.user.userId,
@@ -29,7 +28,6 @@ router.post('/create', auth, async (req, res) => {
 
         await note.save()
         res.status(201).json(note)
-
     } catch (e) {
         res.status(400).json({message: 'Something went wrong, try again.'})
     }
@@ -79,6 +77,26 @@ router.post('/swap', auth, async (req, res) => {
             await notes[secondIndex].save()
         }
 
+        res.status(200).json(notesForFront(notes))
+    } catch (e) {
+        res.status(400).json({message: 'Something went wrong, try again.'})
+    }
+})
+
+router.delete('/delete/:id', auth, async (req, res) => {
+    try {
+        await Note.remove({_id: req.params.id, owner: req.user.userId})
+        const notes = await Note.find({owner: req.user.userId})
+        res.status(200).json(notesForFront(notes))
+    } catch (e) {
+        res.status(400).json({message: 'Something went wrong, try again.'})
+    }
+})
+
+router.post('/edit/:id', auth, async (req, res) => {
+    try {
+        await Note.updateOne({_id: req.params.id, owner: req.user.userId}, {...req.body})
+        const notes = await Note.find({owner: req.user.userId})
         res.status(200).json(notesForFront(notes))
     } catch (e) {
         res.status(400).json({message: 'Something went wrong, try again.'})

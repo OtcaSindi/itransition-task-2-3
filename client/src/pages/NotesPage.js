@@ -14,6 +14,7 @@ function NotesPage() {
     const dispatch = useDispatch()
     const {token} = useContext(AuthContext)
     const [items, setItems] = useState([])
+    const [modal, setModal] = useState(null)
 
     const onChange = (sourceId, sourceIndex, targetIndex, targetId) => {
         if (sourceIndex !== targetIndex && targetIndex < notes.length) {
@@ -33,12 +34,12 @@ function NotesPage() {
 
     return (
         <Fragment>
-            <CreateNoteModal token={token}/>
+            <CreateNoteModal token={token} setModal={setModal}/>
             <GridContextProvider onChange={onChange} style={{maxWidth: '100%'}}>
                 <GridDropZone
                     id="items"
                     boxesPerRow={4}
-                    rowHeight={200}
+                    rowHeight={150}
                     style={{height: "500px"}}
                 >
                     {notes.map(note => (
@@ -49,7 +50,7 @@ function NotesPage() {
                                      height: "250px"
                                  }}
                             >
-                                <Note title={note.title} content={note.content}/>
+                                <Note id={note.id} title={note.title} content={note.content} color={note.color} modal={modal}/>
                             </div>
                         </GridItem>
                     ))}

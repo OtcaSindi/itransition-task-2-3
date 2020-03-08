@@ -80,6 +80,16 @@ export const create = (baseURL = '') => {
         return await api.post('/api/notes/swap', {...indexes})
     }
 
+    const deleteNoteById = async (token, id) => {
+        setHeader(token)
+        return await api.delete(`/api/notes/delete/${id}`)
+    }
+
+    const editNote = async (token, id, form) => {
+        setHeader(token)
+        return await api.post(`/api/notes/edit/${id}`, {...form})
+    }
+
     return {
         auth,
         getUsers,
@@ -89,6 +99,8 @@ export const create = (baseURL = '') => {
         logoutRequest,
         createNote,
         getNotes,
-        swapNotes
+        swapNotes,
+        deleteNoteById,
+        editNote
     }
 }

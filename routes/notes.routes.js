@@ -45,7 +45,7 @@ router.get('/', auth, async (req, res) => {
 router.post('/swap', auth, async (req, res) => {
     try {
         const {firstIndex, secondIndex} = req.body
-        const notes = await Note.find()
+        const notes = await Note.find({owner: req.user.userId})
 
         const {title, content, color} = notes[firstIndex]
 

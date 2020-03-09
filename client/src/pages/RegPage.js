@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from "react"
 import {useHttp} from "../hooks/http.hook"
 import {useMessage} from "../hooks/message.hook"
-import {Link} from "react-router-dom"
+import {Link, useHistory} from "react-router-dom"
 
 const RegPage = () => {
     const message = useMessage()
+    const history = useHistory()
     const {loading, error, request, clearError} = useHttp()
     const [form, setForm] = useState({
         email: '',
@@ -25,6 +26,9 @@ const RegPage = () => {
         try {
             const data = await request('/api/auth/register', 'POST', {...form})
             message(data.message)
+            if (data.message === 'User created.') {
+                history.push('/auth')
+            }
         } catch (e) {
 
         }

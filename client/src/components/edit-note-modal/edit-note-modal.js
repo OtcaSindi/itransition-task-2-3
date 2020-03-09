@@ -1,4 +1,4 @@
-import React, {Component, Fragment, useEffect, useState} from "react"
+import React, {useEffect, useState} from "react"
 import {useDispatch} from 'react-redux'
 
 import {create} from "../../services"
@@ -8,10 +8,12 @@ import {Modal} from 'react-materialize'
 import "materialize-css/dist/css/materialize.min.css"
 import {notesError, notesLoaded, notesRequested} from "../../actionsCreator"
 import {useAuth} from "../../hooks/auth.hook"
+import {useMessage} from "../../hooks/message.hook"
 
 const EditNoteModal = ({noteId, title, content, color}) => {
 
     const {token} = useAuth()
+    const message = useMessage()
     const dispatch = useDispatch()
 
     const [newTitle, setNewTitle] = useState(title)
@@ -23,17 +25,23 @@ const EditNoteModal = ({noteId, title, content, color}) => {
     }, [])
 
     const editNote = (noteId) => async () => {
-        try {
-            dispatch(notesRequested())
-            const {data} = await create()
-                .editNote(token, noteId, {
-                    title: newTitle,
-                    content: newContent,
-                    color: newColor
-                })
-            dispatch(notesLoaded(data))
-        } catch (e) {
-            dispatch(notesError(e))
+        if (newTitle) {
+            if (newTitle !== title || newContent !== content || newColor !== color) {
+                try {
+                    dispatch(notesRequested())
+                    const {data} = await create()
+                        .editNote(token, noteId, {
+                            title: newTitle,
+                            content: newContent,
+                            color: newColor
+                        })
+                    dispatch(notesLoaded(data))
+                } catch (e) {
+                    dispatch(notesError(e))
+                }
+            }
+        } else {
+            message('Give a title to your note.')
         }
     }
 
@@ -55,7 +63,7 @@ const EditNoteModal = ({noteId, title, content, color}) => {
                 <button className="modal-close waves-effect waves-red btn-flat">
                     Cancel
                 </button>,
-                <button className="modal-close waves-effect waves-red btn-flat"
+                <button className="modal-close waves-effect waves-yellow btn-flat"
                 onClick={editNote(noteId)}>
                     Edit
                     </button>

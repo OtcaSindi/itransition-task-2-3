@@ -1,6 +1,7 @@
 const {Router} = require('express')
 
 const User = require('../models/User')
+const Note = require('../models/Note')
 const auth = require('../middleware/auth.middleware')
 const {OFFLINE, BLOCKED} = require('../constants')
 
@@ -27,7 +28,8 @@ router.get('/', auth, async (req, res) => {
 
 router.delete('/delete/:id', auth, async (req, res) => {
     try {
-        await User.findByIdAndDelete(req.params.id)
+        await User.remove({_id: req.params.id})
+        await Note.remove({owner: req.params.id})
         res.status(200).json({message: 'User has been deleted.'})
     } catch (e) {
         res.status(400).json({message: 'Something went wrong, try again.'})

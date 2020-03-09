@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react"
+import React, {useState} from "react"
 import {useDispatch} from 'react-redux'
 
 import {create} from "../../services"
@@ -6,26 +6,32 @@ import {PINK, BLUE, GREY} from "../../constants"
 import {Modal} from 'react-materialize'
 
 import "materialize-css/dist/css/materialize.min.css"
-import {fetchNotes, notesError, notesLoaded, notesRequested} from "../../actionsCreator"
+import {fetchNotes} from "../../actionsCreator"
 import {useAuth} from "../../hooks/auth.hook"
+import {useMessage} from "../../hooks/message.hook"
 
 const CreateNoteModal = () => {
 
     const {token} = useAuth()
     const dispatch = useDispatch()
+    const message = useMessage()
 
     const [title, setTitle] = useState('')
     const [content, setContent] = useState('')
-    const [color, setColor] = useState('')
+    const [color, setColor] = useState(PINK)
 
     const createNote = async () => {
-        await create()
-            .createNote(token, {
-                title,
-                content,
-                color
-            })
-        dispatch(fetchNotes(token))
+        if (title) {
+            await create()
+                .createNote(token, {
+                    title,
+                    content,
+                    color
+                })
+            dispatch(fetchNotes(token))
+        } else {
+            message('Give a title to your note.')
+        }
     }
 
     const changeTitle = (e) => {
@@ -46,7 +52,7 @@ const CreateNoteModal = () => {
                    <button className="modal-close waves-effect waves-red btn-flat">
                        Cancel
                    </button>,
-                   <button className="modal-close waves-effect waves-red btn-flat"
+                   <button className="modal-close waves-effect waves-green btn-flat"
                            onClick={createNote}>
                        Create
                    </button>

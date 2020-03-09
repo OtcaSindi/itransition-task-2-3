@@ -7,6 +7,7 @@ import {AuthContext} from "../context/AuthContext"
 import {useDispatch, useSelector} from "react-redux"
 import {fetchNotes, swapNotesRequest} from "../actionsCreator"
 import Loader from "../components/loader"
+import DownloadAllNotes from "../components/download-all-notes"
 
 function NotesPage() {
 
@@ -14,7 +15,6 @@ function NotesPage() {
     const dispatch = useDispatch()
     const {token} = useContext(AuthContext)
     const [items, setItems] = useState([])
-    const [modal, setModal] = useState(null)
 
     const onChange = (sourceId, sourceIndex, targetIndex, targetId) => {
         if (sourceIndex !== targetIndex && targetIndex < notes.length) {
@@ -34,7 +34,9 @@ function NotesPage() {
 
     return (
         <Fragment>
-            <CreateNoteModal token={token} setModal={setModal}/>
+            <CreateNoteModal token={token}/>
+            <DownloadAllNotes/>
+            {Boolean(notes.length) || <h2 className="center">Don't want to add a note?</h2>}
             <GridContextProvider onChange={onChange} style={{maxWidth: '100%'}}>
                 <GridDropZone
                     id="items"
@@ -50,7 +52,7 @@ function NotesPage() {
                                      height: "250px"
                                  }}
                             >
-                                <Note id={note.id} title={note.title} content={note.content} color={note.color} modal={modal}/>
+                                <Note id={note.id} title={note.title} content={note.content} color={note.color}/>
                             </div>
                         </GridItem>
                     ))}

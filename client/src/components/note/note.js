@@ -1,5 +1,6 @@
 import React from "react"
 import DropdownNote from "../dropdown-note"
+import InfoNoteModal from "../info-note-modal"
 
 const Note = ({id, title, content, color}) => {
     return (
@@ -9,19 +10,7 @@ const Note = ({id, title, content, color}) => {
                     <div className="card-content white-text"
                          style={{paddingTop: '0'}}>
                         <DropdownNote noteId={id} title={title} content={content} color={color}/>
-                        <span className="card-title"
-                              style={{
-                                  overflow: 'hidden',
-                                  textOverflow: 'ellipsis',
-                                  maxHeight: '50px',
-                                  whiteSpace: 'nowrap'
-                              }}>{title}</span>
-                        <p style={{
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            maxHeight: '50px',
-                            whiteSpace: 'nowrap'
-                        }}>{content}</p>
+                        <InfoNoteModal title={title} content={content}/>
                     </div>
                     <div className="card-action">
                     </div>

@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React from "react"
 
 import {Dropdown} from 'react-materialize'
 
@@ -12,26 +12,11 @@ const DropdownNote = ({noteId, title, content, color}) => {
 
     const {token} = useAuth()
     const dispatch = useDispatch()
-    const [form, setForm] = useState({
-        title: '',
-        content: '',
-
-    })
 
     const removeNoteById = (id) => async () => {
         try {
             dispatch(notesRequested())
             const {data} = await create().deleteNoteById(token, id)
-            dispatch(notesLoaded(data))
-        } catch (e) {
-            dispatch(notesError(e))
-        }
-    }
-
-    const editNoteById = (id) => async () => {
-        try {
-            dispatch(notesRequested())
-            const {data} = await create().editNoteById(token, id, )
             dispatch(notesLoaded(data))
         } catch (e) {
             dispatch(notesError(e))

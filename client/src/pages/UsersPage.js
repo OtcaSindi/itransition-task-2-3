@@ -19,8 +19,8 @@ const UsersPage = () => {
         const foo = async () => {
             try {
                 dispatch(usersRequested())
-                const {data} = await create().getUsers(token)
-                dispatch(usersLoaded(data))
+                const data = await create().getUsers(token)
+                dispatch(usersLoaded(data.data))
             } catch (e) {
                 dispatch(usersError(e))
                 logout()

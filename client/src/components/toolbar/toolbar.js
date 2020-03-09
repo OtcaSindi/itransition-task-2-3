@@ -32,6 +32,7 @@ const Toolbar = () => {
                     }))
 
                     if (currentUser) {
+                        message('Your account is blocked.')
                         return logout()
                     }
 
@@ -43,7 +44,8 @@ const Toolbar = () => {
                 }
             }
         } catch (e) {
-            throw e
+            message('Your account is blocked or deleted.')
+            logout()
         }
     }
 
@@ -60,13 +62,15 @@ const Toolbar = () => {
                 }))
 
                 if (currentUser) {
+                    message('Your account is deleted.')
                     return logout()
                 }
 
                 dispatch(fetchUsers(token))
             }
         } catch (e) {
-            throw e
+            message('Your account is blocked or deleted.')
+            logout()
         }
     }
 
@@ -91,7 +95,8 @@ const Toolbar = () => {
                 }
             }
         } catch (e) {
-            throw e
+            message('Your account is blocked or deleted.')
+            logout()
         }
     }
 

@@ -13,10 +13,14 @@ export const create = (baseURL = '') => {
         api.defaults.headers.common['Authorization'] = `Bearer ${token}`
     }
 
-    const getUsers = (token) => {
+    const getUsers = async (token) => {
         setHeader(token)
         try {
-            return api.get('/api/users')
+            const response = await api.get('/api/users')
+            if (response.status === 401) {
+                throw new Error('No authorization.')
+            }
+            return response
         } catch (e) {
             throw e
         }
@@ -25,7 +29,11 @@ export const create = (baseURL = '') => {
     const deleteById = async (id, token) => {
         setHeader(token)
         try {
-            return api.delete(`/api/users/delete/${id}`)
+            const response = await api.delete(`/api/users/delete/${id}`)
+            if (response.status === 401) {
+                throw new Error('No authorization.')
+            }
+            return response
         } catch (e) {
             throw e
         }
@@ -34,7 +42,11 @@ export const create = (baseURL = '') => {
     const blockById = async (id, token) => {
         setHeader(token)
         try {
-            return api.post(`/api/users/block/${id}`)
+            const response = await api.post(`/api/users/block/${id}`)
+            if (response.status === 401) {
+                throw new Error('No authorization.')
+            }
+            return response
         } catch (e) {
             throw e
         }
@@ -43,7 +55,11 @@ export const create = (baseURL = '') => {
     const unlockById = async (id, token) => {
         setHeader(token)
         try {
-            return api.post(`/api/users/unlock/${id}`)
+            const response = await api.post(`/api/users/unlock/${id}`)
+            if (response.status === 401) {
+                throw new Error('No authorization.')
+            }
+            return response
         } catch (e) {
             throw e
         }

@@ -22,10 +22,11 @@ const LinksList = ({users}) => {
     }
 
     const dateFormat = (dateNow) => {
+        console.log(dateNow, typeof dateNow)
         if (dateNow) {
-            const arrayStrDate = new Date(dateNow).toUTCString().split(' ')
-            arrayStrDate.length--
-            return arrayStrDate.join(' ')
+            let usaTime = new Date(dateNow).toLocaleString("en-US", {timeZone: "Europe/Minsk"});
+            usaTime = new Date(usaTime);
+            return usaTime.toLocaleString()
         }
         return dateNow
     }
